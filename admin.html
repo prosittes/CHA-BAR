@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admin — Lista de Casamento</title>
+    <style>
+        /* ===== RESET E BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primaria: #8B6914;
+            --primaria-escura: #6B4F0F;
+            --secundaria: #C9A96E;
+            --fundo: #F8F6F3;
+            --branco: #FFFFFF;
+            --texto: #333333;
+            --texto-claro: #666666;
+            --borda: #E0DCD7;
+            --sucesso: #4CAF50;
+            --erro: #E74C3C;
+            --aviso: #FF9800;
+            --disponivel: #4CAF50;
+            --reservado: #E74C3C;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--fundo);
+            min-height: 100vh;
+            color: var(--texto);
+            padding-bottom: 40px;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: linear-gradient(135deg, var(--primaria) 0%, var(--primaria-escura) 100%);
+            color: var(--branco);
+            padding: 25px 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 25px 15px;
+        }
+
+        /* ===== SEÇÃO DE CADASTRO ===== */
+        .secao-cadastro {
+            background: var(--branco);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .secao-titulo {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primaria);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-grupo {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-grupo.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-grupo label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--texto-claro);
+            margin-bottom: 6px;
+        }
+
+        .form-grupo input[type="text"],
+        .form-grupo input[type="number"] {
+            padding: 12px 14px;
+            border: 2px solid var(--borda);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+            font-family: inherit;
+        }
+
+        .form-grupo input:focus {
+            outline: none;
+            border-color: var(--secundaria);
+        }
+
+        /* Campo de arquivo customizado */
+        .file-input-wrapper {
+            position: relative;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 14px;
+            border: 2px dashed var(--borda);
+            border-radius: 10px;
+            background: var(--fundo);
+            color: var(--texto-claro);
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .file-input-wrapper:hover .file-input-button {
+            border-color: var(--secundaria);
+            color: var(--primaria);
+        }
+
+        .file-input-wrapper.has-file .file-input-button {
+            border-color: var(--disponivel);
+            border-style: solid;
+            color: var(--disponivel);
+            background: #E8F5E9;
+        }
+
+        .preview-imagem {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .preview-imagem.visivel {
+            display: block;
+        }
+
+        .btn-salvar {
+            grid-column: 1 / -1;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primaria) 0%, var(--primaria-escura) 100%);
+            color: var(--branco);
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-salvar:hover {
+            opacity: 0.9;
+        }
+
+        .btn-salvar:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ===== ESTATÍSTICAS ===== */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--branco);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .stat-numero {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primaria);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--texto-claro);
+            margin-top: 4px;
+        }
+
+        /* ===== TABELA ===== */
+        .secao-tabela {
+            background: var(--branco);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            overflow-x: auto;
+        }
+
+        .tabela {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        .tabela th {
+            text-align: left;
+            padding: 12px 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--texto-claro);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--borda);
+        }
+
+        .tabela td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--borda);
+            vertical-align: middle;
+        }
+
+        .tabela tr:hover {
+            background: var(--fundo);
+        }
+
+        .tabela-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: var(--fundo);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-disponivel {
+            background: #E8F5E9;
+            color: var(--disponivel);
+        }
+
+        .badge-reservado {
+            background: #FFEBEE;
+            color: var(--reservado);
+        }
+
+        .padrinho-info {
+            font-size: 0.85rem;
+        }
+
+        .padrinho-nome {
+            font-weight: 600;
+            color: var(--texto);
+        }
+
+        .padrinho-whatsapp {
+            color: var(--texto-claro);
+            font-size: 0.8rem;
+        }
+
+        .preco {
+            font-weight: 600;
+            color: var(--primaria);
+        }
+
+        /* ===== LOADING ===== */
+        .loading-row td {
+            text-align: center;
+            padding: 40px;
+            color: var(--texto-claro);
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--texto);
+            color: var(--branco);
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .toast.sucesso { background: var(--sucesso); }
+        .toast.erro { background: var(--erro); }
+        .toast.visivel {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ===== RESPONSIVO ===== */
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .secao-cadastro,
+            .secao-tabela {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <div class="header">
+        <h1>💍 Painel Administrativo</h1>
+        <p>Bruna & Jhonatan — Lista de Casamento</p>
+    </div>
+
+    <div class="container">
+
+        <!-- ===== ESTATÍSTICAS ===== -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-numero" id="statTotal">0</div>
+                <div class="stat-label">Total de Presentes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-numero" id="statDisponiveis" style="color: var(--disponivel)">0</div>
+                <div class="stat-label">Disponíveis</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-numero" id="statReservados" style="color: var(--reservado)">0</div>
+                <div class="stat-label">Reservados</div>
+            </div>
+        </div>
+
+        <!-- ===== FORMULÁRIO DE CADASTRO ===== -->
+        <div class="secao-cadastro">
+            <div class="secao-titulo">➕ Cadastrar Novo Presente</div>
+            
+            <form class="form-grid" id="formCadastro">
+                <div class="form-grupo">
+                    <label for="nomePresente">Nome do Presente</label>
+                    <input 
+                        type="text" 
+                        id="nomePresente" 
+                        placeholder="Ex: Jogo de Panelas"
+                        required
+                    >
+                </div>
+                
+                <div class="form-grupo">
+                    <label for="precoPresente">Preço Estimado (R$)</label>
+                    <input 
+                        type="number" 
+                        id="precoPresente" 
+                        placeholder="0,00"
+                        step="0.01"
+                        min="0"
+                        required
+                    >
+                </div>
+                
+                <div class="form-grupo full">
+                    <label>Foto do Presente</label>
+                    <div class="file-input-wrapper" id="fileWrapper">
+                        <input 
+                            type="file" 
+                            id="imagemPresente" 
+                            accept="image/*"
+                            capture="environment"
+                        >
+                        <div class="file-input-button" id="fileButton">
+                            📷 Clique para tirar foto ou escolher da galeria
+                        </div>
+                    </div>
+                    <img class="preview-imagem" id="previewImagem" alt="Preview">
+                </div>
+                
+                <button type="submit" class="btn-salvar" id="btnSalvar">
+                    💾 Salvar Presente
+                </button>
+            </form>
+        </div>
+
+        <!-- ===== TABELA DE CONTROLE ===== -->
+        <div class="secao-tabela">
+            <div class="secao-titulo">📋 Controle de Presentes (Tempo Real)</div>
+            
+            <table class="tabela">
+                <thead>
+                    <tr>
+                        <th>Foto</th>
+                        <th>Nome</th>
+                        <th>Preço</th>
+                        <th>Status</th>
+                        <th>Quem Escolheu</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaBody">
+                    <tr class="loading-row">
+                        <td colspan="5">Carregando presentes...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ===== FIREBASE SDK (Módulos) ===== -->
+    <script type="module" src="admin.js"></script>
+</body>
+</html>

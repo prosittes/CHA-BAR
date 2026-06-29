@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lista de Casamento — Bruna & Jhonatan</title>
+    <style>
+        /* ===== RESET E BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ouro: #C9A96E;
+            --ouro-escuro: #A68B4B;
+            --rosa: #F8E8E0;
+            --rosa-escuro: #E8C4B8;
+            --branco: #FFFFFF;
+            --cinza: #F5F5F5;
+            --texto: #4A4A4A;
+            --texto-claro: #888888;
+            --sucesso: #4CAF50;
+            --erro: #E74C3C;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--rosa) 0%, var(--branco) 100%);
+            min-height: 100vh;
+            color: var(--texto);
+            padding-bottom: 40px;
+        }
+
+        /* ===== CABEÇALHO ===== */
+        header {
+            text-align: center;
+            padding: 50px 20px 30px;
+            background: var(--branco);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '♥';
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            color: var(--ouro);
+            opacity: 0.3;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            font-weight: 300;
+            letter-spacing: 3px;
+            color: var(--ouro-escuro);
+            margin-bottom: 8px;
+        }
+
+        header h1 span {
+            font-weight: 600;
+            color: var(--ouro);
+        }
+
+        header p {
+            color: var(--texto-claro);
+            font-size: 1rem;
+            max-width: 400px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* ===== GRID DE PRESENTES ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 15px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        /* ===== CARD ===== */
+        .card {
+            background: var(--branco);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        .card-imagem {
+            width: 100%;
+            height: 220px;
+            background: var(--cinza);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-imagem img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* CRÍTICO: Mantém proporção sem distorcer */
+            transition: transform 0.5s ease;
+        }
+
+        .card:hover .card-imagem img {
+            transform: scale(1.05);
+        }
+
+        .card-conteudo {
+            padding: 20px;
+        }
+
+        .card-nome {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--texto);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .card-preco {
+            font-size: 1.3rem;
+            color: var(--ouro);
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .card-preco::before {
+            content: 'R$ ';
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+
+        .btn-escolher {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--ouro) 0%, var(--ouro-escuro) 100%);
+            color: var(--branco);
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-escolher:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+
+        .btn-escolher:active {
+            transform: scale(0.98);
+        }
+
+        /* ===== ESTADO VAZIO ===== */
+        .vazio {
+            text-align: center;
+            padding: 60px 20px;
+            grid-column: 1 / -1;
+        }
+
+        .vazio-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+
+        .vazio h3 {
+            color: var(--texto-claro);
+            font-weight: 400;
+            font-size: 1.2rem;
+        }
+
+        /* ===== LOADING ===== */
+        .loading {
+            text-align: center;
+            padding: 60px;
+            grid-column: 1 / -1;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--rosa-escuro);
+            border-top-color: var(--ouro);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            padding: 20px;
+        }
+
+        .modal-overlay.ativo {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--branco);
+            border-radius: 24px;
+            padding: 35px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.ativo .modal {
+            transform: scale(1);
+        }
+
+        .modal h2 {
+            text-align: center;
+            color: var(--ouro-escuro);
+            margin-bottom: 8px;
+            font-size: 1.4rem;
+        }
+
+        .modal p {
+            text-align: center;
+            color: var(--texto-claro);
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+        }
+
+        .form-grupo {
+            margin-bottom: 18px;
+        }
+
+        .form-grupo label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--texto);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .form-grupo input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--cinza);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-grupo input:focus {
+            outline: none;
+            border-color: var(--ouro);
+        }
+
+        .modal-botoes {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .modal-botoes button {
+            flex: 1;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-family: inherit;
+        }
+
+        .btn-confirmar {
+            background: linear-gradient(135deg, var(--ouro) 0%, var(--ouro-escuro) 100%);
+            color: var(--branco);
+        }
+
+        .btn-confirmar:hover {
+            opacity: 0.9;
+        }
+
+        .btn-confirmar:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-cancelar {
+            background: var(--cinza);
+            color: var(--texto);
+        }
+
+        .btn-cancelar:hover {
+            background: #e0e0e0;
+        }
+
+        /* ===== TOAST NOTIFICAÇÃO ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--texto);
+            color: var(--branco);
+            padding: 16px 28px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 90%;
+        }
+
+        .toast.sucesso {
+            background: var(--sucesso);
+        }
+
+        .toast.erro {
+            background: var(--erro);
+        }
+
+        .toast.visivel {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ===== RESPONSIVO ===== */
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.6rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .modal {
+                padding: 25px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== CABEÇALHO ===== -->
+    <header>
+        <h1>Bruna <span>&</span> Jhonatan</h1>
+        <p>Escolha um presente especial para celebrar nosso amor. Cada gesto será lembrado com carinho!</p>
+    </header>
+
+    <!-- ===== GRID DE PRESENTES ===== -->
+    <div class="container">
+        <div class="grid" id="gridPresentes">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>Carregando presentes...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL ===== -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <h2>♥ Confirmar Presente</h2>
+            <p id="modalPresenteNome">Você está escolhendo: <strong>—</strong></p>
+            
+            <div class="form-grupo">
+                <label for="nomeConvidado">Nome Completo</label>
+                <input 
+                    type="text" 
+                    id="nomeConvidado" 
+                    placeholder="Digite seu nome completo"
+                    autocomplete="name"
+                >
+            </div>
+            
+            <div class="form-grupo">
+                <label for="whatsappConvidado">WhatsApp</label>
+                <input 
+                    type="tel" 
+                    id="whatsappConvidado" 
+                    placeholder="(12) 99999-9999"
+                    inputmode="tel"
+                    autocomplete="tel"
+                >
+            </div>
+            
+            <div class="modal-botoes">
+                <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+                <button class="btn-confirmar" id="btnConfirmar" onclick="confirmarEscolha()">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ===== FIREBASE SDK (Módulos) ===== -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
