@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chá Bar & Chá de Casa Nova — Bruna & Jonatas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+<base target="_blank">
+</head>
+<body>
+
+  <!-- SEÇÃO 1: TELA INICIAL COM FOTO DE FUNDO -->
+  <section id="secao-inicial" class="secao ativa">
+    <div class="hero-bg">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <div class="decor-line decor-line-gold"></div>
+        <p class="subtitulo subtitulo-light">Você está convidado para o</p>
+        <h1 class="titulo-light">Chá Bar &<br>Chá de Casa Nova</h1>
+        <div class="nomes nomes-light">
+          <span>Bruna</span>
+          <span class="amp">&</span>
+          <span>Jonatas</span>
+        </div>
+        <div class="decor-line decor-line-gold"></div>
+        <p class="descricao descricao-light">Queremos celebrar esse momento tão especial com você!<br>Escolha sua cidade e confirme sua presença.</p>
+        <button id="btn-avancar" class="btn-primario btn-gold">
+          <span>Avançar</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEÇÃO 2: ESCOLHA DO LOCAL -->
+  <section id="secao-local" class="secao">
+    <div class="container">
+      <div class="hero">
+        <div class="decor-line"></div>
+        <h2>Escolha o Local</h2>
+        <p class="descricao">Selecione a cidade onde você deseja comparecer:</p>
+        <div class="botoes-cidade">
+          <button id="btn-andrelandia" class="btn-cidade">
+            <span class="icone">📍</span>
+            <span class="nome">Andrelândia</span>
+            <span class="estado">Minas Gerais</span>
+          </button>
+          <button id="btn-sjc" class="btn-cidade">
+            <span class="icone">📍</span>
+            <span class="nome">São José dos Campos</span>
+            <span class="estado">São Paulo</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEÇÃO 3: INFORMAÇÕES E CONFIRMAÇÃO -->
+  <section id="secao-confirmacao" class="secao">
+    <div class="container">
+      <div class="hero">
+        <div class="decor-line"></div>
+        <h2>Informações do Evento</h2>
+        <div id="info-cidade" class="card-info"></div>
+
+        <div id="area-confirmacao">
+          <p class="descricao">Confirme sua presença preenchendo abaixo:</p>
+          <input type="text" id="input-nome" placeholder="Digite seu nome completo" maxlength="100">
+          <div class="botoes-confirmacao">
+            <button id="btn-confirmar" class="btn-primario btn-verde">
+              <span>✓</span> Sim, confirmo minha presença
+            </button>
+            <button id="btn-nao-confirmar" class="btn-primario btn-cinza">
+              <span>✕</span> Não poderei comparecer
+            </button>
+          </div>
+        </div>
+
+        <div id="area-encerrado" class="mensagem-encerrado" style="display:none;">
+          <div class="icone-aviso">⏰</div>
+          <h3>Confirmações Encerradas</h3>
+          <p>O prazo para confirmação de presença terminou.<br>Agradecemos seu carinho! 🤍</p>
+        </div>
+
+        <button id="btn-ir-presentes" class="btn-primario btn-outline" style="margin-top:2rem;">
+          <span>Ver Lista de Presentes</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEÇÃO 4: LISTA DE PRESENTES -->
+  <section id="secao-presentes" class="secao">
+    <div class="container">
+      <div class="decor-line"></div>
+      <h2>Lista de Presentes</h2>
+      <div class="intro-presentes">
+        <p>Preparamos essa lista para facilitar a escolha dos presentes e evitar itens repetidos. Ao selecionar um item, ele ficará indisponível para os demais convidados.</p>
+        <a href="https://pin.it/3Q82wRXuD" target="_blank" class="btn-pinterest">
+          <span>🤍</span> Veja aqui algumas inspirações dos presentes que escolhemos
+        </a>
+        <p class="nota-estilo"><strong>Preferência por itens:</strong> Clean, moderno e funcional</p>
+      </div>
+      <div id="lista-presentes"></div>
+      <button id="btn-finalizar" class="btn-primario" style="margin-top:2rem;">Finalizar</button>
+    </div>
+  </section>
+
+  <!-- SEÇÃO 5: TELA FINAL -->
+  <section id="secao-final" class="secao">
+    <div class="container">
+      <div class="hero">
+        <div class="decor-line"></div>
+        <div class="icone-coracao">🤍</div>
+        <h2>Obrigado!</h2>
+        <p class="descricao mensagem-final">
+          Agradecemos de coração por fazer parte desse momento tão especial das nossas vidas.<br>
+          Sua presença é o maior presente que poderíamos receber!<br><br>
+          Com amor,<br><strong>Bruna & Jonatas</strong>
+        </p>
+        <div class="decor-line"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODAL DE RESERVA -->
+  <div id="modal-reserva" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Reservar Presente</h3>
+        <button class="btn-fechar" id="btn-fechar-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="modal-presente-img" class="modal-img"></div>
+        <p id="modal-presente-nome"></p>
+        <input type="text" id="input-padrinho" placeholder="Digite seu nome completo" maxlength="100">
+        <p class="aviso-transacao">⚠️ Após confirmar, o item ficará reservado em seu nome e não poderá ser desfeito aqui. Em caso de erro, entre em contato com os noivos.</p>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-cancelar-reserva" class="btn-primario btn-cinza">Cancelar</button>
+        <button id="btn-confirmar-reserva" class="btn-primario">Confirmar Reserva</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast"></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
