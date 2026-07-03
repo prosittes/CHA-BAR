@@ -79,7 +79,7 @@ h3 { font-size: clamp(1.1rem, 3vw, 1.4rem); }
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url('https://photos.app.goo.gl/oUhinFwcAy34QC1z7');
+  background-image: url('img/fundo.jpg');
   background-size: cover;
   background-position: center 30%;
   background-repeat: no-repeat;
@@ -92,7 +92,7 @@ h3 { font-size: clamp(1.1rem, 3vw, 1.4rem); }
     180deg,
     rgba(28,25,23,0.3) 0%,
     rgba(28,25,23,0.6) 50%,
-    rgba(28,25,23,0.8) 100%
+    rgba(158, 139, 127, 0.8) 100%
   );
 }
 
