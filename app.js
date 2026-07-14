@@ -1,6 +1,6 @@
 /* ============================================
    CHÁ BAR & CHÁ DE CASA NOVA — APP DO CONVIDADO
-   Firebase SDK v10 — Otimizado com cache e timeout
+   Firebase SDK v10 — Sem índice composto
    ============================================ */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -12,8 +12,7 @@ import {
   doc,
   runTransaction,
   serverTimestamp,
-  query,
-  getDocs
+  query
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -85,26 +84,6 @@ const dadosCidades = {
 
 const DATA_LIMITE = new Date('2026-07-26T23:59:59');
 
-// ===== CACHE LOCAL =====
-const CACHE_KEY_PRESENTES = 'cha_bar_presentes_guest_cache';
-const CACHE_TTL = 10 * 60 * 1000; // 10 minutos para convidados
-
-function salvarCache(chave, dados) {
-  try {
-    localStorage.setItem(chave, JSON.stringify({ data: dados, timestamp: Date.now() }));
-  } catch (e) { /* ignora */ }
-}
-
-function carregarCache(chave) {
-  try {
-    const item = localStorage.getItem(chave);
-    if (!item) return null;
-    const parsed = JSON.parse(item);
-    if (Date.now() - parsed.timestamp > CACHE_TTL) return null;
-    return parsed.data;
-  } catch (e) { return null; }
-}
-
 function mostrarSecao(nome) {
   Object.values(secoes).forEach(s => s.classList.remove('ativa'));
   secoes[nome].classList.add('ativa');
@@ -174,8 +153,9 @@ btnConfirmar.addEventListener('click', () => salvarConfirmacao(true));
 btnNaoConfirmar.addEventListener('click', () => salvarConfirmacao(false));
 btnIrPresentes.addEventListener('click', () => mostrarSecao('presentes'));
 
-// ===== RENDERIZAR PRESENTES =====
+// Lista de presentes com foto e valor — NÃO mostra quem reservou (privacidade)
 function renderizarPresentes(presentes) {
+  // Ordena manualmente no JavaScript
   presentes.sort((a, b) => {
     const catA = a.categoria || '';
     const catB = b.categoria || '';
@@ -207,7 +187,7 @@ function renderizarPresentes(presentes) {
     categorias[cat].forEach(p => {
       const reservado = p.status === 'reservado';
       const imgHtml = p.imagem
-        ? `<img src="${p.imagem}" alt="${p.nome}" class="presente-img" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=\'presente-img-placeholder\'>🎁</div>'">`
+        ? `<img src="${p.imagem}" alt="${p.nome}" class="presente-img" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=\'presente-img-placeholder\'>🎁</div>'">`
         : `<div class="presente-img-placeholder">🎁</div>`;
 
       const valorHtml = p.valor ? `<div class="presente-valor">💰 ${p.valor}</div>` : '';
@@ -229,62 +209,23 @@ function renderizarPresentes(presentes) {
     html += `</div>`;
   });
 
-  listaPresentes.innerHTML = html || '<p style="text-align:center;color:var(--cinza-claro);padding:2rem;">Nenhum presente cadastrado ainda.</p>';
+  listaPresentes.innerHTML = html || '<p style="text-align:center;color:var(--cinza-claro);">Nenhum presente cadastrado ainda.</p>';
 
   document.querySelectorAll('.btn-escolher').forEach(btn => {
     btn.addEventListener('click', () => abrirModal(btn.dataset.id, btn.dataset.nome, btn.dataset.valor, btn.dataset.img));
   });
 }
 
-// ===== CARREGAR PRESENTES COM CACHE + TIMEOUT =====
-async function carregarPresentes() {
-  // 1. Mostrar cache imediatamente
-  const cache = carregarCache(CACHE_KEY_PRESENTES);
-  if (cache && cache.length > 0) {
-    renderizarPresentes(cache);
-  } else {
-    listaPresentes.innerHTML = '<p style="text-align:center;color:var(--cinza-claro);padding:2rem;">Carregando presentes...</p>';
-  }
-
-  // 2. Buscar do Firebase com timeout
-  try {
-    const snapshot = await Promise.race([
-      getDocs(query(collection(db, 'presentes'))),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 10000))
-    ]);
-
-    const presentes = [];
-    snapshot.forEach(docSnap => presentes.push({ id: docSnap.id, ...docSnap.data() }));
-
-    salvarCache(CACHE_KEY_PRESENTES, presentes);
-    renderizarPresentes(presentes);
-
-    // 3. Ativar onSnapshot para atualizações em tempo real
-    onSnapshot(query(collection(db, 'presentes')), (snap) => {
-      const updated = [];
-      snap.forEach(d => updated.push({ id: d.id, ...d.data() }));
-      salvarCache(CACHE_KEY_PRESENTES, updated);
-      renderizarPresentes(updated);
-    });
-
-  } catch (erro) {
-    console.error('Erro ao carregar presentes:', erro);
-    if (!cache || cache.length === 0) {
-      listaPresentes.innerHTML = `
-        <div style="text-align:center;padding:2rem;">
-          <p style="color:var(--vermelho);font-weight:600;">❌ Erro ao carregar presentes</p>
-          <p style="color:var(--cinza-claro);font-size:0.9rem;margin-top:0.5rem;">
-            Verifique sua conexão e recarregue a página.<br>
-            <small>${erro.message}</small>
-          </p>
-          <button onclick="location.reload()" class="btn-primario" style="margin-top:1rem;max-width:200px;">🔄 Recarregar</button>
-        </div>
-      `;
-    } else {
-      mostrarToast('Usando dados em cache. Conexão lenta.', 'erro');
-    }
-  }
-}
+// SEM orderBy composto — evita erro de índice
+const qPresentes = query(collection(db, 'presentes'));
+onSnapshot(qPresentes, (snapshot) => {
+  const presentes = [];
+  snapshot.forEach(docSnap => presentes.push({ id: docSnap.id, ...docSnap.data() }));
+  renderizarPresentes(presentes);
+}, (erro) => {
+  console.error('Erro:', erro);
+  mostrarToast('Erro ao carregar presentes: ' + erro.message, 'erro');
+});
 
 // Modal de reserva
 function abrirModal(id, nome, valor, img) {
@@ -360,8 +301,3 @@ function mostrarToast(mensagem, tipo = '') {
   toast.classList.add('visivel');
   setTimeout(() => toast.classList.remove('visivel'), 3500);
 }
-
-// ===== INICIALIZAÇÃO =====
-document.addEventListener('DOMContentLoaded', () => {
-  carregarPresentes();
-});
