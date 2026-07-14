@@ -13,7 +13,8 @@ import {
   updateDoc,
   deleteDoc,
   serverTimestamp,
-  query
+  query,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -124,7 +125,9 @@ onSnapshot(qPresentes, (snapshot) => {
   snapshot.forEach(docSnap => presentes.push({ id: docSnap.id, ...docSnap.data() }));
   renderizarTabela(presentes);
 }, (erro) => {
+  console.error('Erro ao carregar presentes:', erro);
   mostrarToast('Erro ao carregar: ' + erro.message, 'erro');
+  tabelaPresentes.innerHTML = `<tr><td colspan="7" class="vazio">❌ Erro ao carregar. Verifique sua conexão e recarregue a página.<br><small>${erro.message}</small></td></tr>`;
 });
 
 function renderizarTabela(presentes) {
@@ -143,11 +146,11 @@ function renderizarTabela(presentes) {
     html += `
       <tr>
         <td>${imgCell}</td>
-        <td style="font-weight:500; color:var(--preto);">${p.nome}</td>
-        <td>${p.categoria}</td>
-        <td>${p.valor || '—'}</td>
+        <td style="font-weight:500; color:var(--preto);">${escapeHtml(p.nome)}</td>
+        <td>${escapeHtml(p.categoria)}</td>
+        <td>${escapeHtml(p.valor) || '—'}</td>
         <td><span class="tag-status ${reservado ? 'tag-reservado' : 'tag-disponivel'}">${reservado ? '🔒 Reservado' : '✓ Disponível'}</span></td>
-        <td>${reservado ? (p.padrinho || '—') : '—'}</td>
+        <td>${reservado ? escapeHtml(p.padrinho || '—') : '—'}</td>
         <td>
           <button class="btn btn-azul btn-pequeno" onclick="abrirEditar('${p.id}', '${escapeHtml(p.nome)}', '${escapeHtml(p.categoria)}', '${escapeHtml(p.valor || '')}', '${p.imagem ? escapeHtml(p.imagem) : ''}')">Editar</button>
           ${reservado ? `<button class="btn btn-vermelho btn-pequeno" onclick="resetarReserva('${p.id}')">Remover Reserva</button>` : ''}
@@ -161,20 +164,25 @@ function renderizarTabela(presentes) {
 
 function escapeHtml(text) {
   if (!text) return '';
-  return text.replace(/'/g, "\'").replace(/"/g, '\"');
+  return text
+    .replace(/\/g, '\\')
+    .replace(/'/g, "\'")
+    .replace(/"/g, '\"')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 }
 
 // Abrir modal de edição
 window.abrirEditar = function(id, nome, categoria, valor, imagem) {
   editId.value = id;
-  editNome.value = nome.replace(/\'/g, "'").replace(/\"/g, '"');
-  editCategoria.value = categoria.replace(/\'/g, "'").replace(/\"/g, '"');
-  editValor.value = valor.replace(/\'/g, "'").replace(/\"/g, '"');
+  editNome.value = nome.replace(/\\/g, '\').replace(/\'/g, "'").replace(/\"/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  editCategoria.value = categoria.replace(/\\/g, '\').replace(/\'/g, "'").replace(/\"/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  editValor.value = valor.replace(/\\/g, '\').replace(/\'/g, "'").replace(/\"/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
   editImagemBase64 = '';
   editImagem.value = '';
 
   if (imagem) {
-    editPreview.src = imagem.replace(/\'/g, "'").replace(/\"/g, '"');
+    editPreview.src = imagem.replace(/\\/g, '\').replace(/\'/g, "'").replace(/\"/g, '"');
     editPreview.classList.add('visivel');
   } else {
     editPreview.classList.remove('visivel');
@@ -238,6 +246,9 @@ onSnapshot(qConfirmacoes, (snapshot) => {
   const confirmacoes = [];
   snapshot.forEach(docSnap => confirmacoes.push({ id: docSnap.id, ...docSnap.data() }));
   renderizarConfirmacoes(confirmacoes);
+}, (erro) => {
+  console.error('Erro ao carregar confirmações:', erro);
+  mostrarToast('Erro ao carregar confirmações: ' + erro.message, 'erro');
 });
 
 function renderizarConfirmacoes(confirmacoes) {
@@ -263,7 +274,7 @@ function renderizarLista(elemento, lista) {
   }
   elemento.innerHTML = lista.map(c => `
     <div class="item-presenca">
-      <span class="nome">${c.nome}</span>
+      <span class="nome">${escapeHtml(c.nome)}</span>
       <span class="${c.comparecera ? 'status-sim' : 'status-nao'}">${c.comparecera ? '✓ Sim' : '✕ Não'}</span>
     </div>
   `).join('');
