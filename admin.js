@@ -165,9 +165,9 @@ function renderizarTabela(presentes) {
 function escapeHtml(text) {
   if (!text) return '';
   return text
-    .replace(/\/g, '\\')
-    .replace(/'/g, "\'")
-    .replace(/"/g, '\"')
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '\\"')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
 }
@@ -175,14 +175,14 @@ function escapeHtml(text) {
 // Abrir modal de edição
 window.abrirEditar = function(id, nome, categoria, valor, imagem) {
   editId.value = id;
-  editNome.value = nome.replace(/\\/g, '\').replace(/\'/g, "'").replace(/\"/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-  editCategoria.value = categoria.replace(/\\/g, '\').replace(/\'/g, "'").replace(/\"/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-  editValor.value = valor.replace(/\\/g, '\').replace(/\'/g, "'").replace(/\"/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  editNome.value = nome.replace(/\\\\/g, '\\').replace(/\\'/g, "'").replace(/\\"/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  editCategoria.value = categoria.replace(/\\\\/g, '\\').replace(/\\'/g, "'").replace(/\\"/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  editValor.value = valor.replace(/\\\\/g, '\\').replace(/\\'/g, "'").replace(/\\"/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
   editImagemBase64 = '';
   editImagem.value = '';
 
   if (imagem) {
-    editPreview.src = imagem.replace(/\\/g, '\').replace(/\'/g, "'").replace(/\"/g, '"');
+    editPreview.src = imagem.replace(/\\\\/g, '\\').replace(/\\'/g, "'").replace(/\\"/g, '"');
     editPreview.classList.add('visivel');
   } else {
     editPreview.classList.remove('visivel');
