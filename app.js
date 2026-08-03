@@ -71,7 +71,7 @@ const dadosCidades = {
     estado: 'Minas Gerais',
     data: '08/08/2026',
     horario: '19h00',
-    endereco: 'Rua Vereador José Zamora, Nº 20 — Bairro Santa Tereza'
+    endereco: 'Rua Vereador Joao Zamora, Nº 20 — Bairro Santa Tereza'
   },
   sjc: {
     nome: 'São José dos Campos',
