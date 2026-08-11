@@ -82,7 +82,7 @@ const dadosCidades = {
   }
 };
 
-const DATA_LIMITE = new Date('2026-07-26T23:59:59');
+const DATA_LIMITE = new Date('2026-20-26T23:59:59');
 
 function mostrarSecao(nome) {
   Object.values(secoes).forEach(s => s.classList.remove('ativa'));
